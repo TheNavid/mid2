@@ -5,20 +5,7 @@
 
 using namespace std;
 
-class User
-{
 
-}
-
-class Professor : public User
-{
-
-}
-
-class Student : public User
-{
-
-}
 
 class book
 {
@@ -34,6 +21,44 @@ class Magazine : public book
 {
 
 }
+
+
+
+
+
+
+
+
+class User
+{
+public:
+
+protected:
+	string name;
+	vector <Book*>
+
+}
+
+User::User(string name_)
+{
+	name = name_;
+}
+
+class Professor : public User
+{
+
+}
+
+class Student : public User
+{
+
+}
+
+
+
+
+
+
 
 
 class Library // class asli bara handling
@@ -57,7 +82,7 @@ public :
 
 	int get_total_penalty(string member_name);
 
-	int time_pass(intdays);
+	int time_pass(int days);
 
 	vector<string> available_titles();
 
@@ -87,6 +112,17 @@ void Library::add_book(string book_title, int copiese)
 	Book.push_back(book);
 }
 
+void Library::add_magazine(string magazine_title, int year, int number, int copies)
+{
+	Magazine* magazine = new Magazine(magazine_title, year, number, copiese);
+	Book.push_back(magazine);
+}
+
+void Library::add_reference(string reference_title, int copiess)
+{
+	Reference* reference = new Reference(reference_title, copiese);
+	Book.push_back(reference);
+}
 
 
 int main()

@@ -319,7 +319,10 @@ private:
 	bool is_user_exists(string name);
 
 	bool is_book_exists(string name);
-	User* findUser(string member_name);
+
+	User* find_user(string member_name);
+
+	Book* find_book(string book_name);
 
 	vector <string> available_books;
 
@@ -329,17 +332,31 @@ private:
 
 };
 
-User* findUser(string member_name)
+User* find_user(string member_name)
 {
 	for(int i=0;i<users.size();i++)
 	{
-		if(users[i].get_name() == member_name)
+		if(users[i]->get_name() == member_name)
 		{
 			return users[i];
 		}
 	}
 	return NULL;
 }
+
+Book* find_book(string book_name)
+{
+	for(int i=0;i<books.size();i++)
+	{
+		if(books[i]->get_name() == book_name)
+		{
+			return books[i];
+		}
+	}
+	return NULL;
+}
+
+
 
 
 

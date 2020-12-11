@@ -319,6 +319,7 @@ private:
 	bool is_user_exists(string name);
 
 	bool is_book_exists(string name);
+	User* findUser(string member_name);
 
 	vector <string> available_books;
 
@@ -327,6 +328,20 @@ private:
 	int time;
 
 };
+
+User* findUser(string member_name)
+{
+	for(int i=0;i<users.size();i++)
+	{
+		if(users[i].get_name() == member_name)
+		{
+			return users[i];
+		}
+	}
+	return NULL;
+}
+
+
 
 int Library::time_pass(int days)
 {

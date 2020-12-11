@@ -2,25 +2,30 @@
 #include <vector>
 #include <string>
 #include <cstdlib>
+#include <exception>
 
 using namespace std;
 
+#define EMPTY ""
+
+#define number_of_book_can_borrowed_by_professor 5
+#define number_of_book_can_borrowed_by_student 2
 
 
-class book
+class Book
 {
 
-}
+};
 
-class Reference : public book
+class Reference : public Book
 {
 
-}
+};
 
-class Magazine : public book
+class Magazine : public Book
 {
 
-}
+};
 
 
 
@@ -32,26 +37,119 @@ class Magazine : public book
 class User
 {
 public:
+	User(string name_);
+
+	virtual void addBook(Book* book) = 0;
+
+	void deleteBook(string bookName);
+
+	void increasetotalPenalty(int penalty);
 
 protected:
 	string name;
-	vector <Book*>
 
-}
+	vector <Book*> borrowedBooks;
+
+	int totalPenalty;
+
+};
 
 User::User(string name_)
 {
-	name = name_;
+	if (name_ != EMPTY)
+	{
+		name = name_;
+		totalPenalty = 0;
+	}
+	//else 
+		//throw runtime_error("name could not be empty");
 }
+
+void User::deleteBook(string bookName)
+{
+	for (int i = 0; i < borrowedBooks.size(); i++)
+	{
+		if (borrowedBooks[i]->getName() == bookName)
+			borrowedBooks.erase(borrowedBooks.begin() + i);
+	}
+}
+
+void User::increasetotalPenalty(int penalty)
+{
+	totalPenalty += penalty;
+}
+
+
+
+
+
+
+
 
 class Professor : public User
 {
+public:
+	Professor(string name);
+
+	virtual void addBook(Book* book);
+
+private:
+
+	int numberOfBookCanBorrowed = number_of_book_can_borrowed_by_professor;
+
+};
+
+Professor::Professor(string name)
+					:User(name)
+{
 
 }
 
+void Professor::addBook(Book* book)
+{
+	if (borrowedBooks.size() < numberOfBookCanBorrowed)
+		borrowedBooks.push_back(book);
+	//else
+		//throw runtime_error("professor can not borrow more than 5 books");
+}
+
+
+
+
+
+
+
+
+
 class Student : public User
 {
+public:
+	Student(string student_id, string student_name);
 
+	virtual void addBook(Book* book);
+
+private:
+	string id;
+
+	int numberOfBookCanBorrowed = number_of_book_can_borrowed_by_student;
+
+};
+
+Student::Student(string student_id, string student_name)
+				:User(student_name)
+{
+	if (student_id != EMPTY)
+		id = student_id;
+	//else
+		//throw runtime_error("student_id is not valid")
+}
+
+void Student::addBook(Book* book)
+{
+	if (borrowedBooks.size() < numberOfBookCanBorrowed)
+		borrowedBooks.push_back(book);
+	//else
+		//throw runtime_error("students can not borrow more than 5 books");
 }
 
 
@@ -92,36 +190,36 @@ private:
 
 	vector <User*> users;
 
-}
+};
 
 void Library::add_student_member(string student_id, string student_name)
 {
 	Student* student = new Student(student_id, student_name);
-	User.push_back(student);
+	users.push_back(student);
 }
 
 void Library::add_prof_member(string prof_name)
 {
 	Professor* professor = new Professor(prof_name);
-	User.push_back(professor);
+	users.push_back(professor);
 }
 
-void Library::add_book(string book_title, int copiese)
+void Library::add_book(string book_title, int copies)
 {
-	Book* book = new Book(book_title, copiese);
-	Book.push_back(book);
+	Book* book = new Book(book_title, copies);
+	books.push_back(book);
 }
 
 void Library::add_magazine(string magazine_title, int year, int number, int copies)
 {
-	Magazine* magazine = new Magazine(magazine_title, year, number, copiese);
-	Book.push_back(magazine);
+	Magazine* magazine = new Magazine(magazine_title, year, number, copies);
+	books.push_back(magazine);
 }
 
-void Library::add_reference(string reference_title, int copiess)
+void Library::add_reference(string reference_title, int copies)
 {
-	Reference* reference = new Reference(reference_title, copiese);
-	Book.push_back(reference);
+	Reference* reference = new Reference(reference_title, copies);
+	books.push_back(reference);
 }
 
 

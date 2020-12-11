@@ -11,6 +11,7 @@ using namespace std;
 
 #define BOOK_EXTENDING_TIMES 2
 #define MAGAZINE_EXTENDING_TIMES 0
+#define REFERENCE_EXTENDING_TIMES 2
 
 
 #define EMPTY ""
@@ -24,94 +25,130 @@ class Book
 {
 	public:
 
-		Book(string _title, int _copies);
-		bool isAvailable();
-		string getTitle();
-		void borrow(int currentTime);
-		int return_document();
-		int extend();
-		bool canBeExtended(int currentTime);
+		Book(string _title);
+		bool is_available();
+		string get_title();
+		void borrow(int current_time);
+		int return_document(int current_time);
+		bool extend(int current_time);
+
+		
 
 	private:
 		string title;
-		//int copies;
-		bool isBorrowed;
-		int borrowStartTime;
-		int dueTime;
-		int extendedTimes;
+		bool is_borrowed;
+		int due_time;
+		int extended_times;
+		bool can_be_extended(int current_time);
+		
 
 	protected:
-		int borrowLength;
-		int calcPenalty(int currentTime);
-		void setDueTime(int currentTime);
-
+		int borrow_length;
+		int extending_limit;
+		virtual int calc_penalty(int current_time);
 
 };
 
-Book::Book(string _title, int _copies)
+Book::Book(string _title)
 {
 	title = _title;
-	copies = _copies;
-	isBorrowed =false;
-	extendedTimes = 0;
-	borrowedCopies = 0;
-	//setBorrowLength();
+	is_borrowed =false;
+	extended_times = 0;
+	borrow_length = BOOK_BORROW_LENGTH;
+	extending_limit = BOOK_EXTENDING_TIMES;
 }
 
-string Book::getTitle()
+string Book::get_title()
 {
 	return title;
 }
 
-bool Book::isAvailable()
+bool Book::is_available()
 {
-	return !isBorrowed;
+	return !is_borrowed;
 }
 
-bool Book::canBeExtended(int currentTime)
+bool Book::can_be_extended(int current_time)
 {
-	return currentTime < dueTime;
+	return current_time < due_time && extended_times < extending_limit;
 }
 
-void Book::borrow(int currentTime)
+void Book::borrow(int current_time)
 {
-	dueTime = setDueTime();
+	due_time = current_time + borrow_length;
+	is_borrowed = true;
 }
 
-int return_document(int currentTime)
+int Book::return_document(int current_time)
 {
-	isBorrowed = false;
-	return calcPenalty(currentTime);
+	is_borrowed = false;
+	return calc_penalty(current_time);
 }
+
+bool Book::extend(int current_time)
+{
+	if (can_be_extended(current_time))
+	{
+		due_time += borrow_length;
+	}
+	else
+	{
+		throw runtime_error("Can not extend the book");
+	}
+}
+
+int Book::calc_penalty(int current_time)
+{
+
+}
+
+
+
 
 
 class Reference : public Book
 {
-
+	public:
+		Reference(string _title);
 };
 
-Reference::Reference(string _title, int copies):Book(_title, _copies)
+Reference::Reference(string _title): Book(_title)
 {
-	borrowLength = REFERENCE_BORROW_LENGTH;
+	borrow_length = REFERENCE_BORROW_LENGTH;
+	extending_limit = REFERENCE_EXTENDING_TIMES;
 }
+
+int Reference::calc_penalty(int current_time)
+{
+
+}
+
+
+
+
 
 
 class Magazine : public Book
 {
 	public:
-		Magazine(int year, int number);
+		Magazine(string _title, int year, int number);
 	private:
 		int year;
 		int number;
 
 };
 
-Magazine::Magazine(string _title, int copies, int year, int number):Book(_title,_copies)
+Magazine::Magazine(string _title, int year, int number):Book(_title)
 {
-	borrowLength = MAGAZINE_BORROW_LENGTH;
+
+	borrow_length = MAGAZINE_BORROW_LENGTH;
+	extending_limit = MAGAZINE_EXTENDING_TIMES;
 }
 
+int Magazine::calc_penalty(int current_time)
+{
 
+}
 
 
 

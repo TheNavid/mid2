@@ -611,4 +611,23 @@ int Library::get_total_penalty(string member_name)
 int main()
 {
 
+	Library ut_lib;
+	ut_lib.add_student_member("810199999", "Naser");
+	ut_lib.add_student_member("810198888", "Negar");
+	ut_lib.add_prof_member("Dr. Nagargar");
+	ut_lib.add_prof_member("Dr. Naseri");
+	ut_lib.add_book("Lean Startup", 1);
+	ut_lib.add_magazine("Today News, vol.38, no.3", 1395,3,1);
+	ut_lib.add_reference("Cambridge Dictionary", 3);
+//	ut_lib.borrow("Naser", "Lean Startup");
+	vector <string> available_docs = ut_lib.available_titles();
+	for(int i=0; i < available_docs.size(); i++)
+	{
+		cout << available_docs[i] <<endl;
+	}
+	ut_lib.time_pass(10);
+//	ut_lib.extend("Naser", "Lean Startup");
+	ut_lib.time_pass(12);
+
+
 }

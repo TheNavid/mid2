@@ -152,7 +152,7 @@ Magazine::Magazine(string _title, int _year, int _number):Book(_title)
 	else if (_year <= 0)
 		throw runtime_error("invalid year");
 	else if (_number < 0)
-		throw runtime_error("invalid magazine number");
+		throw runtime_error("invalid magazine number");	
 }
 
 int Magazine::calc_penalty(int current_time)
@@ -274,7 +274,7 @@ Student::Student(string student_id, string student_name)
 	if (student_id != EMPTY)
 		id = student_id;
 	else
-		throw runtime_error("student_id is not valid")
+		throw runtime_error("student_id is not valid");
 }
 
 void Student::add_book(Book* book)
@@ -337,13 +337,13 @@ bool Library::is_user_exists(string name)
 {
 	for (int i = 0; i < users.size(); i++)
 	{
-		if (users->get_name() == name)
+		if (users[i]->get_name() == name)
 			return true;
 	}
 	return false;
 }
 
-bool is_book_exists(string name)
+bool Library::is_book_exists(string name)
 {
 	for (int i = 0; i < available_books.size(); i++)
 	{
@@ -423,7 +423,7 @@ void Library::add_magazine(string magazine_title, int year, int number, int copi
 				Magazine* magazine = new Magazine(magazine_title, year, number);
 				books.push_back(magazine);
 			}
-			available_books.push_back(magzine_title);
+			available_books.push_back(magazine_title);
 		}
 		else 
 			throw runtime_error("Magazine has already added");
@@ -433,22 +433,22 @@ void Library::add_magazine(string magazine_title, int year, int number, int copi
 	}
 }
 
-void Library::add_reference(string reference_title)
+void Library::add_reference(string reference_title, int copies)
 {
 	//Exists book
 	try
 	{
-		if (!is_book_exists(magazine_title))
+		if (!is_book_exists(reference_title))
 		{	
 			for (int i = 0; i < copies; i++)
 			{
 				Reference* reference = new Reference(reference_title);
 				books.push_back(reference);
 			}
-			available_books.push_back(magzine_title);
+			available_books.push_back(reference_title);
 		}
 		else
-			throw runtime_error("Reference has already added")
+			throw runtime_error("Reference has already added");
 	}catch(runtime_error &ex)
 		{
 			cerr << ex.what() << endl;

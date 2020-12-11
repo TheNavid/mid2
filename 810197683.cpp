@@ -38,7 +38,6 @@ class Book
 	private:
 		string title;
 		bool is_borrowed;
-		int due_time;
 		int extended_times;
 		bool can_be_extended(int current_time);
 		
@@ -46,6 +45,7 @@ class Book
 	protected:
 		int borrow_length;
 		int extending_limit;
+		int due_time;
 
 };
 
@@ -99,7 +99,35 @@ bool Book::extend(int current_time)
 
 int Book::calc_penalty(int current_time)
 {
-
+	int penalty = 0;
+	int delay = current_time - due_time;
+	if(delay <=0)
+	{
+		return 0;
+	}
+	else
+	{
+		if(delay <=7)
+		{
+			penalty += delay * 2000;
+		}
+		if(delay > 7)
+		{
+			if(delay <= 21)
+			{
+				penalty += (delay-7) * 3000;
+			}
+			else
+			{
+				penalty += 14 * 3000;
+			}
+		}
+		if(delay > 21)
+		{
+			penalty += (delay-21) *3000;
+		}
+	}
+	return penalty;
 }
 
 
@@ -121,7 +149,24 @@ Reference::Reference(string _title): Book(_title)
 
 int Reference::calc_penalty(int current_time)
 {
-
+	int penalty = 0;
+	int delay = current_time - due_time;
+	if(delay <=0)
+	{
+		return 0;
+	}
+	else
+	{
+		if(delay <=3)
+		{
+			penalty += delay * 5000;
+		}
+		if(delay > 3)
+		{
+			penalty += (delay-3) * 7000;
+		}
+	}
+	return penalty;
 }
 
 
@@ -157,7 +202,24 @@ Magazine::Magazine(string _title, int _year, int _number):Book(_title)
 
 int Magazine::calc_penalty(int current_time)
 {
-
+	int penalty = 0;
+	int delay = current_time - due_time;
+	if(delay <=0)
+	{
+		return 0;
+	}
+	else
+	{
+		if(year < 1390)
+		{
+			penalty += delay * 2000;
+		}
+		else
+		{
+			penalty += delay * 3000;
+		}
+	}
+	return penalty;
 }
 
 
@@ -175,6 +237,8 @@ public:
 	void increase_total_penalty(int penalty);
 
 	string get_name();
+
+	int get_penalty();
 
 protected:
 	string name;
@@ -213,6 +277,11 @@ void User::increase_total_penalty(int penalty)
 string User::get_name()
 {
 	return name;
+}
+
+int User::get_penalty()
+{
+	return total_penalty;
 }
 
 
@@ -310,7 +379,7 @@ public :
 
 	int get_total_penalty(string member_name);
 
-	int time_pass(int days);
+	void time_pass(int days);
 
 	vector<string> available_titles();
 
@@ -384,7 +453,7 @@ Book* Library::find_book(string book_name)
 
 
 
-int Library::time_pass(int days)
+void Library::time_pass(int days)
 {
 	if (days >= 0)
 		time += days;
@@ -512,6 +581,28 @@ void Library::add_reference(string reference_title, int copies)
 		{
 			cerr << ex.what() << endl;
 		}
+}
+
+int Library::get_total_penalty(string member_name)
+{
+
+	try
+		{
+			if (!is_user_exists(member_name))
+			{
+				throw runtime_error("Student has already joined");
+			}
+			else
+			{
+				User* user = find_user(member_name);
+				return user->get_penalty();
+			}
+				
+		}catch(runtime_error &ex)
+		{
+				cerr << ex.what() << endl;
+		}
+	return 0;
 }
 
 

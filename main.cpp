@@ -31,6 +31,7 @@ class Book
 		void borrow(int current_time);
 		int return_document(int current_time);
 		bool extend(int current_time);
+		virtual int calc_penalty(int current_time);
 
 		
 
@@ -45,7 +46,6 @@ class Book
 	protected:
 		int borrow_length;
 		int extending_limit;
-		virtual int calc_penalty(int current_time);
 
 };
 
@@ -110,6 +110,7 @@ class Reference : public Book
 {
 	public:
 		Reference(string _title);
+		virtual int calc_penalty(int current_time);
 };
 
 Reference::Reference(string _title): Book(_title)
@@ -132,17 +133,26 @@ class Magazine : public Book
 {
 	public:
 		Magazine(string _title, int year, int number);
+		virtual int calc_penalty(int current_time);
 	private:
 		int year;
 		int number;
 
 };
 
-Magazine::Magazine(string _title, int year, int number):Book(_title)
+Magazine::Magazine(string _title, int _year, int _number):Book(_title)
 {
-
-	borrow_length = MAGAZINE_BORROW_LENGTH;
-	extending_limit = MAGAZINE_EXTENDING_TIMES;
+	if (_year > 0 && _number >= 0)
+	{
+		year =_year;
+		number = _number;
+		borrow_length = MAGAZINE_BORROW_LENGTH;
+		extending_limit = MAGAZINE_EXTENDING_TIMES;
+	}
+	else if (_year <= 0)
+		throw runtime_error("invalid year");
+	else if (_number < 0)
+		throw runtime_error("invalid magazine number");
 }
 
 int Magazine::calc_penalty(int current_time)
@@ -182,8 +192,8 @@ User::User(string name_)
 		name = name_;
 		total_penalty = 0;
 	}
-	//else 
-		//throw runtime_error("name could not be empty");
+	else 
+		throw runtime_error("name could not be empty");
 }
 
 void User::delete_book(string book_name)
@@ -238,9 +248,6 @@ void Professor::add_book(Book* book)
 	else
 		throw runtime_error("professor can not borrow more than 5 books");
 }
-
-
-
 
 
 

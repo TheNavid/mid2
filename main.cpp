@@ -43,9 +43,9 @@ class Book
 		
 
 	protected:
+		int due_time;
 		int borrow_length;
 		int extending_limit;
-		int due_time;
 
 };
 
@@ -147,7 +147,6 @@ Reference::Reference(string _title): Book(_title)
 	extending_limit = REFERENCE_EXTENDING_TIMES;
 }
 
-
 int Reference::calc_penalty(int current_time)
 {
 	int penalty = 0;
@@ -169,7 +168,6 @@ int Reference::calc_penalty(int current_time)
 	}
 	return penalty;
 }
-
 
 
 
@@ -234,11 +232,14 @@ public:
 
 	virtual void add_book(Book* book) = 0;
 
+	bool is_book_borrowed_before(string book_name);
+
 	void delete_book(string book_name);
 
 	void increase_total_penalty(int penalty);
 
 	string get_name();
+
 	int get_penalty();
 
 protected:
@@ -280,12 +281,24 @@ string User::get_name()
 	return name;
 }
 
-
+bool User::is_book_borrowed_before(string book_name)
+{
+	for (int i = 0; i < borrowed_books.size(); i++)
+	{
+		if(borrowed_books[i]->get_title() == book_name)
+			return true;
+	}
+	return false;
+}
 
 int User::get_penalty()
 {
 	return total_penalty;
 }
+
+
+
+
 
 
 
@@ -312,10 +325,15 @@ Professor::Professor(string name)
 
 void Professor::add_book(Book* book)
 {
-	if (borrowed_books.size() < number_of_book_can_borrowed)
+	if(!is_book_borrowed_before(book->get_title()))
+	{
+		if (borrowed_books.size() < number_of_book_can_borrowed)
 		borrowed_books.push_back(book);
-	else
-		throw runtime_error("professor can not borrow more than 5 books");
+		else
+			throw runtime_error("professor can not borrow more than 5 books");
+	}
+	else 
+		throw ("you borrowed this book before");
 }
 
 
@@ -348,10 +366,15 @@ Student::Student(string student_id, string student_name)
 
 void Student::add_book(Book* book)
 {
-	if (borrowed_books.size() < number_of_book_can_borrowed)
-		borrowed_books.push_back(book);
-	else
-		throw runtime_error("students can not borrow more than 2 books");
+	if(!is_book_borrowed_before(book->get_title()))
+	{
+		if (borrowed_books.size() < number_of_book_can_borrowed)
+			borrowed_books.push_back(book);
+		else
+			throw runtime_error("students can not borrow more than 2 books");
+	}
+	else 
+		throw runtime_error("you borrowed this book before");
 }
 
 
@@ -389,11 +412,13 @@ private:
 
 	bool is_book_exists(string name);
 
-	bool added_before(vector <string> names, string name);
+	bool added_before(vector <string> names,string name);
 
 	User* find_user(string member_name);
 
-	Book* find_book(string book_name);
+	Book* find_best_book(vector <Book*> wanted_books);
+
+	vector <Book*> find_books(string book_name);
 
 	vector <string> available_books;
 
@@ -402,6 +427,35 @@ private:
 	int time;
 
 };
+
+Book* Library::find_best_book(vector <Book*> wanted_books)
+{
+	for (int i = 0; i < wanted_books.size(); i++)
+	{
+		if (wanted_books[i]->is_available())
+			return wanted_books[i];
+	}
+	return NULL;
+}
+
+void Library::borrow(string member_name, string document_title)
+{
+	User* user = find_user(member_name);
+	vector<Book*> wanted_books = find_books(document_title);
+	Book* book = find_best_book(wanted_books);
+	if (user != NULL && book != NULL)
+	{
+		user->add_book(book);
+		book->borrow(time);
+	}
+	else if (wanted_books.size() == 0)
+		throw ("book does not exists");
+	else if (user == NULL)
+		throw runtime_error("user not joined");
+	else if (book == NULL)
+		throw runtime_error("book is not available");
+}
+
 
 
 bool Library::added_before(vector <string> names, string name)
@@ -437,21 +491,18 @@ User* Library::find_user(string member_name)
 	return NULL;
 }
 
-Book* Library::find_book(string book_name)
+vector <Book*> Library::find_books(string book_name)
 {
+	vector <Book*> wanted_book;
 	for(int i=0;i<books.size();i++)
 	{
 		if(books[i]->get_title() == book_name)
 		{
-			return books[i];
+			 wanted_book.push_back(books[i]);
 		}
 	}
-	return NULL;
+	return wanted_book;
 }
-
-
-
-
 
 int Library::time_pass(int days)
 {
@@ -583,7 +634,6 @@ void Library::add_reference(string reference_title, int copies)
 		}
 }
 
-
 int Library::get_total_penalty(string member_name)
 {
 
@@ -608,26 +658,8 @@ int Library::get_total_penalty(string member_name)
 
 
 
+
 int main()
 {
-
-	Library ut_lib;
-	ut_lib.add_student_member("810199999", "Naser");
-	ut_lib.add_student_member("810198888", "Negar");
-	ut_lib.add_prof_member("Dr. Nagargar");
-	ut_lib.add_prof_member("Dr. Naseri");
-	ut_lib.add_book("Lean Startup", 1);
-	ut_lib.add_magazine("Today News, vol.38, no.3", 1395,3,1);
-	ut_lib.add_reference("Cambridge Dictionary", 3);
-//	ut_lib.borrow("Naser", "Lean Startup");
-	vector <string> available_docs = ut_lib.available_titles();
-	for(int i=0; i < available_docs.size(); i++)
-	{
-		cout << available_docs[i] <<endl;
-	}
-	ut_lib.time_pass(10);
-//	ut_lib.extend("Naser", "Lean Startup");
-	ut_lib.time_pass(12);
-
 
 }

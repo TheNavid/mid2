@@ -2,32 +2,114 @@
 #include <vector>
 #include <string>
 #include <cstdlib>
-#include <exception>
 
 using namespace std;
+
+#define BOOK_BORROW_LENGTH 10
+#define REFERENCE_BORROW_LENGTH 5
+#define MAGAZINE_BORROW_LENGTH 2
+
+#define BOOK_EXTENDING_TIMES 2
+#define MAGAZINE_EXTENDING_TIMES 0
+
 
 #define EMPTY ""
 
 #define number_of_book_can_borrowed_by_professor 5
-#define number_of_book_can_borrowed_by_student 2
+#define number_of_book_can_borrowed_by_studen
+
 
 
 class Book
 {
+	public:
+
+		book(string _title, int _copies);
+		bool isAvailable();
+		string getTitle();
+		void borrow(int currentTime);
+		int return_document();
+		int extend();
+		bool canBeExtended(int currentTime);
+
+	private:
+		string title;
+		//int copies;
+		bool isBorrowed;
+		int borrowStartTime;
+		int dueTime;
+		int extendedTimes;
+
+	protected:
+		int borrowLength;
+		int calcPenalty(int currentTime);
+		void setDueTime(int currentTime);
+
 
 };
+
+Book::book(string _title, int _copies)
+{
+	title = _title;
+	copies = _copies;
+	isBorrowed =false;
+	extendedTimes = 0;
+	borrowedCopies = 0;
+	//setBorrowLength();
+}
+
+string Book::getTitle()
+{
+	return title;
+}
+
+bool Book::isAvailable()
+{
+	return !isBorrowed;
+}
+
+bool Book::canBeExtended(int currentTime)
+{
+	return currentTime < dueTime;
+}
+
+void Book::borrow(int currentTime)
+{
+	dueTime = setDueTime();
+}
+
+int return_document(int currentTime)
+{
+	isBorrowed = false;
+	return calcPenalty(currentTime);
+}
+
 
 class Reference : public Book
 {
 
 };
 
+Reference::Reference(string _title, int copies):Book(_title, _copies)
+{
+	borrowLength = REFERENCE_BORROW_LENGTH;
+}
+
+
 class Magazine : public Book
 {
+	public:
+		Magazine(int year, int number);
+	private:
+		int year;
+		int number;
 
 };
 
-
+Magazine::Magazine(string _title, int copies, int year, int number):Book(_title,_copies)
+{
+	borrowLength = MAGAZINE_BORROW_LENGTH;
+}
 
 
 
@@ -156,9 +238,6 @@ void Student::addBook(Book* book)
 
 
 
-
-
-
 class Library // class asli bara handling
 {
 public :
@@ -187,7 +266,6 @@ public :
 private:
 
 	vector <Book*> books;
-
 	vector <User*> users;
 
 };
